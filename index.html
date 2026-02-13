@@ -8,6 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+      // Shim process.env for browser environments where it's not automatically injected
+      window.process = window.process || { env: {} };
+    </script>
     <style>
       body { font-family: 'Quicksand', sans-serif; }
       .pinboard-bg {
@@ -23,6 +28,12 @@
       }
       .hide-scrollbar::-webkit-scrollbar { display: none; }
       .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      
+      @keyframes slideIn {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      .animate-slide-in { animation: slideIn 0.4s ease-out forwards; }
     </style>
 <script type="importmap">
 {
