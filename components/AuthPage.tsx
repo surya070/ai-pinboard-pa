@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
-// Declare google for Google Identity Services global variable to fix TypeScript errors
 declare const google: any;
 
 const AuthPage: React.FC = () => {
@@ -15,12 +14,10 @@ const AuthPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-  // Initialize Google Sign-In
   useEffect(() => {
-    // Check if the google variable is defined before initializing
     if (typeof google !== 'undefined') {
       google.accounts.id.initialize({
-        client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com", // Replace with real client ID
+        client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
         callback: handleGoogleResponse,
       });
       google.accounts.id.renderButton(
@@ -36,7 +33,7 @@ const AuthPage: React.FC = () => {
       const data = await api.post('/auth/google', { id_token: response.credential });
       login(data.user, data.token);
     } catch (err: any) {
-      setError(err.message || 'Google login failed (Backend might be offline)');
+      setError(err.message || 'Google login failed');
     } finally {
       setLoading(false);
     }
@@ -52,27 +49,21 @@ const AuthPage: React.FC = () => {
       const data = await api.post(endpoint, body);
       login(data.user, data.token);
     } catch (err: any) {
-      setError(err.message || 'Authentication failed (Is the Flask backend running?)');
+      setError(err.message || 'Authentication failed');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDemoMode = () => {
-    const demoUser = {
-      id: 0,
-      name: "Guest User",
-      email: "guest@example.com",
-      auth_provider: 'email' as const
-    };
-    login(demoUser, 'demo-token-' + Date.now());
+    login({ id: 0, name: "Guest User", email: "guest@example.com", auth_provider: 'email' }, 'demo-' + Date.now());
   };
 
   return (
     <div className="min-h-screen pinboard-bg flex items-center justify-center p-6">
       <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 md:p-12 animate-slide-in">
         <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 mx-auto mb-4">
+          <div className="w-16 h-16 bg-teal-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-teal-200 mx-auto mb-4">
             <i className="fas fa-thumbtack text-2xl -rotate-45"></i>
           </div>
           <h1 className="text-3xl font-bold text-gray-900">AI Pinboard PA</h1>
@@ -95,7 +86,7 @@ const AuthPage: React.FC = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-5 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:bg-white outline-none transition-all"
+                className="w-full px-5 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-teal-500 focus:bg-white outline-none transition-all"
                 placeholder="John Doe"
               />
             </div>
@@ -107,7 +98,7 @@ const AuthPage: React.FC = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-5 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:bg-white outline-none transition-all"
+              className="w-full px-5 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-teal-500 focus:bg-white outline-none transition-all"
               placeholder="name@company.com"
             />
           </div>
@@ -118,7 +109,7 @@ const AuthPage: React.FC = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-5 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:bg-white outline-none transition-all"
+              className="w-full px-5 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-teal-500 focus:bg-white outline-none transition-all"
               placeholder="••••••••"
             />
           </div>
@@ -126,19 +117,15 @@ const AuthPage: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+            className="w-full py-4 bg-teal-600 text-white font-bold rounded-2xl shadow-xl shadow-teal-100 hover:bg-teal-700 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
           >
             {loading ? <i className="fas fa-circle-notch animate-spin"></i> : isLogin ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 
         <div className="mt-4">
-          <button
-            onClick={handleDemoMode}
-            className="w-full py-3 bg-white text-indigo-600 border-2 border-indigo-600 font-bold rounded-2xl hover:bg-indigo-50 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-          >
-            <i className="fas fa-play text-xs"></i>
-            Try Demo Mode (Preview)
+          <button onClick={handleDemoMode} className="w-full py-3 bg-white text-teal-600 border-2 border-teal-600 font-bold rounded-2xl hover:bg-teal-50 transition-all flex items-center justify-center gap-2">
+            Try Demo Mode
           </button>
         </div>
 
@@ -152,10 +139,7 @@ const AuthPage: React.FC = () => {
 
         <p className="mt-8 text-center text-sm text-gray-500 font-medium">
           {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-indigo-600 font-bold hover:underline ml-1"
-          >
+          <button onClick={() => setIsLogin(!isLogin)} className="text-teal-600 font-bold hover:underline ml-1">
             {isLogin ? 'Sign up' : 'Sign in'}
           </button>
         </p>

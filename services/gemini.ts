@@ -2,7 +2,6 @@
 import { GoogleGenAI, Type, FunctionDeclaration, Modality } from "@google/genai";
 import { Task } from "../types";
 
-// Define function declarations for tool use
 const addTaskFn: FunctionDeclaration = {
   name: 'addTask',
   parameters: {
@@ -51,9 +50,6 @@ const deleteTaskFn: FunctionDeclaration = {
   },
 };
 
-/**
- * Generates a text response from Gemini using reasoning capabilities.
- */
 export async function getGeminiResponse(
   prompt: string,
   tasks: Task[],
@@ -61,19 +57,17 @@ export async function getGeminiResponse(
 ) {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
-  const systemInstruction = `You are "AI Pinboard PA", a highly intelligent personal assistant managing a user's digital pinboard. 
-  Your goal is to help users manage tasks, deadlines, and productivity. 
-  Current user location/time context: ${new Date().toLocaleString()}.
+  const systemInstruction = `You are "AI Pinboard PA", a highly intelligent personal assistant.
+  Your goal is to help users manage tasks, deadlines, and productivity on their pinboard.
   
-  CURRENT TASKS ON PINBOARD:
+  CURRENT TASKS:
   ${JSON.stringify(tasks, null, 2)}
 
   CAPABILITIES:
-  - Add tasks, edit tasks, delete tasks.
-  - Analyze priorities.
-  - Plan schedules.
+  - Add/Edit/Delete tasks via tools.
+  - Suggest priorities and plan schedules.
   
-  Keep responses concise, especially if the user is using voice input.`;
+  Keep responses warm, professional, and concise. Confirm actions taken.`;
 
   const generateWithRetry = async (retryCount = 0): Promise<any> => {
     try {
@@ -102,9 +96,6 @@ export async function getGeminiResponse(
   return generateWithRetry();
 }
 
-/**
- * Generates high-quality speech from text using gemini-2.5-flash-preview-tts.
- */
 export async function generateSpeech(text: string) {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   try {
@@ -115,17 +106,14 @@ export async function generateSpeech(text: string) {
         responseModalities: [Modality.AUDIO],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Kore' }, // Warm, helpful professional voice
+            prebuiltVoiceConfig: { voiceName: 'Kore' },
           },
         },
       },
     });
-
-    // The audio data is in the first part of the first candidate as inlineData
-    const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-    return base64Audio;
+    return response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
   } catch (error) {
-    console.error("Speech Generation Error:", error);
+    console.error("TTS Error:", error);
     return null;
   }
 }

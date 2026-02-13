@@ -19,7 +19,6 @@ export function decodeBase64(base64: string): Uint8Array {
 
 /**
  * Decodes raw PCM audio data into an AudioBuffer for playback.
- * Gemini TTS returns raw PCM data (S16_LE).
  */
 export async function decodeAudioData(
   data: Uint8Array,
@@ -27,7 +26,6 @@ export async function decodeAudioData(
   sampleRate: number = 24000,
   numChannels: number = 1
 ): Promise<AudioBuffer> {
-  // Use byteOffset and byteLength to handle Int16Array safely even with unusual buffer alignments
   const dataInt16 = new Int16Array(
     data.buffer, 
     data.byteOffset, 
@@ -40,7 +38,6 @@ export async function decodeAudioData(
   for (let channel = 0; channel < numChannels; channel++) {
     const channelData = buffer.getChannelData(channel);
     for (let i = 0; i < frameCount; i++) {
-      // Convert 16-bit integer PCM to 32-bit float PCM [-1.0, 1.0]
       channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
     }
   }
